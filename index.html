@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empire Bay Police Department - Penalty Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a3a5f;
+            --secondary-color: #2c5282;
+            --accent-color: #4a90e2;
+            --dark-bg: #0d1117;
+            --light-bg: #161b22;
+            --card-bg: #1c2128;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --border-color: #30363d;
+            --success-color: #238636;
+            --danger-color: #da3633;
+            --warning-color: #d29922;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--primary-color);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+        }
+
+        .department-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-secondary);
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 10px 15px;
+            transition: all 0.3s;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--accent-color);
+            background-color: transparent;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            background-color: transparent;
+        }
+
+        /* Main Content Styles */
+        .main-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            background-color: var(--secondary-color);
+            color: var(--text-primary);
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        /* Penal Code Item Styles */
+        .penal-code-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .penal-code-item:hover {
+            background-color: var(--light-bg);
+        }
+
+        .penal-code-item:last-child {
+            border-bottom: none;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .code-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .code-category {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .felony {
+            background-color: rgba(218, 54, 51, 0.2);
+            color: var(--danger-color);
+        }
+
+        .misdemeanor {
+            background-color: rgba(210, 153, 34, 0.2);
+            color: var(--warning-color);
+        }
+
+        .infraction {
+            background-color: rgba(74, 144, 226, 0.2);
+            color: var(--accent-color);
+        }
+
+        .judicial {
+            background-color: rgba(147, 51, 234, 0.2);
+            color: #9333ea;
+        }
+
+        .code-description {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .code-penalty {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+        }
+
+        .penalty-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .penalty-icon {
+            color: var(--accent-color);
+        }
+
+        /* Calculator Styles */
+        .calculator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .case-info {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .penalty-display {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .penalty-card {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .penalty-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .penalty-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .selected-charges {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .charge-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .charge-title {
+            font-weight: 500;
+        }
+
+        .charge-penalty {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            color: var(--danger-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .btn-remove:hover {
+            color: #f85149;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a7bc8;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1e3a5f;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* Miranda Rights Styles */
+        .miranda-rights {
+            list-style-type: none;
+        }
+
+        .miranda-rights li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .miranda-rights li:before {
+            content: "•";
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+
+        /* Filter Styles */
+        .filter-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        /* Discord Template Styles */
+        .discord-template {
+            margin-top: 20px;
+        }
+
+        .template-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .template-textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .copy-button {
+            margin-top: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding: 20px 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .calculator-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .department-name {
+                font-size: 1.2rem;
+            }
+
+            .logo {
+                width: 50px;
+                height: 50px;
+            }
+
+            .filter-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo-container">
+                <img src="https://i.imgur.com/JzPgHh2.png" alt="EBPD Logo" class="logo">
+                <div class="department-name">Empire Bay Police Department</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="calculator-tab" data-bs-toggle="tab" data-bs-target="#calculator" type="button" role="tab" aria-controls="calculator" aria-selected="true">Penalty Calculator</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="penalcodes-tab" data-bs-toggle="tab" data-bs-target="#penalcodes" type="button" role="tab" aria-controls="penalcodes" aria-selected="false">Penal Codes</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="miranda-tab" data-bs-toggle="tab" data-bs-target="#miranda" type="button" role="tab" aria-controls="miranda" aria-selected="false">Miranda Rights</button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="mainTabContent">
+            <!-- Penalty Calculator Tab -->
+            <div class="tab-pane fade show active" id="calculator" role="tabpanel" aria-labelledby="calculator-tab">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Penalty Calculator</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" id="chargeSearch" placeholder="Search for penal codes...">
+                        </div>
+
+                        <div class="calculator-container">
+                            <div>
+                                <div class="case-info">
+                                    <label class="form-label">Related Case</label>
+                                    <input type="text" class="form-control" id="caseNumber" placeholder="Enter case number...">
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3>Available Charges</h3>
+                                    </div>
+                                    <div class="card-body" style="padding: 0;">
+                                        <div id="availableCharges" style="max-height: 400px; overflow-y: auto;">
+                                            <!-- Charges will be populated here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3>Penalty Summary</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="penalty-display">
+                                            <div class="penalty-card">
+                                                <span class="penalty-label">Total Fine</span>
+                                                <span class="penalty-value" id="totalFine">$0</span>
+                                            </div>
+                                            <div class="penalty-card">
+                                                <span class="penalty-label">Jail Time</span>
+                                                <span class="penalty-value" id="totalJailTime">0 Months</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3>Selected Charges</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="selectedCharges" class="selected-charges">
+                                            <p style="color: var(--text-secondary); text-align: center; padding: 20px;">No charges selected</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="discord-template">
+                                    <label class="form-label">Discord Template</label>
+                                    <textarea class="template-textarea" id="discordTemplate" readonly></textarea>
+                                    <button class="btn btn-primary copy-button" id="copyToClipboard">
+                                        <i class="fas fa-copy"></i> Copy to Clipboard
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Penal Codes Tab -->
+            <div class="tab-pane fade" id="penalcodes" role="tabpanel" aria-labelledby="penalcodes-tab">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Empire Bay Police Department Penal Codes</h2>
+                        <p style="margin: 0; color: var(--text-secondary);" id="penalCodesCount">Loading penal codes...</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" id="penalCodeSearch" placeholder="Search penal codes...">
+                        </div>
+
+                        <div class="filter-container">
+                            <select class="filter-select" id="categoryFilter">
+                                <option value="">All Categories</option>
+                                <option value="felony">Felony</option>
+                                <option value="misdemeanor">Misdemeanor</option>
+                                <option value="infraction">Infraction</option>
+                                <option value="judicial">Judicial Discretion</option>
+                            </select>
+                            <select class="filter-select" id="titleFilter">
+                                <option value="">All Titles</option>
+                                <option value="1">Title 1: Crimes Against Sovereignty of State</option>
+                                <option value="2">Title 2: Crimes By and Against a Public Servant</option>
+                                <option value="3">Title 3: Crimes Against Public Justice</option>
+                                <option value="4">Title 4: Crimes Against a Person</option>
+                                <option value="5">Title 5: Crimes Against Public Decency and Good Morals</option>
+                                <option value="6">Title 6: Crimes Against Public Health and Safety</option>
+                                <option value="7">Title 7: Crimes Against Public Peace</option>
+                                <option value="8">Title 8: Crimes Against Property</option>
+                                <option value="9">Title 9: Drug/Narcotics Offenses</option>
+                                <option value="10">Title 10: Vehicle Offenses</option>
+                            </select>
+                        </div>
+
+                        <div id="penalCodesList">
+                            <!-- Penal codes will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Miranda Rights Tab -->
+            <div class="tab-pane fade" id="miranda" role="tabpanel" aria-labelledby="miranda-tab">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2>Miranda Rights</h2>
+                        <div>
+                            <button class="btn btn-secondary" id="translateBtn">
+                                <i class="fas fa-language"></i> English
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <ul class="miranda-rights" id="mirandaRightsList">
+                            <li>You have the right to remain silent and not say anything.</li>
+                            <li>Anything you say can and will be used against you in a court of law.</li>
+                            <li>You have the right to an attorney because you were caught in the act.</li>
+                            <li>Do you understand these rights?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Trivox Studio. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Penal codes data
+        const penalCodes = [
+            // Title 1: Crimes Against Sovereignty of State
+            { id: "PC 000.05", name: "Sabotage", category: "felony", title: "1", fine: 30000, jailTime: 38, description: "Deliberate damage or destruction of goverment property or operations." },
+            { id: "PC 000.06", name: "Rebellion", category: "felony", title: "1", fine: 32000, jailTime: 40, description: "Organized violent resistance against the state's authority." },
+            { id: "PC 000.12", name: "Attempted Destruction of Public Property", category: "felony", title: "1", fine: 25000, jailTime: 34, description: "Attempted but failing to damage or destroy government property." },
+            { id: "PC 11410", name: "Terrorism", category: "felony", title: "1", fine: 33000, jailTime: 40, description: "Using violence or threats to create fear and disrupt government society." },
+            { id: "PC 118", name: "Perjury", category: "felony", title: "1", fine: 27000, jailTime: 35, description: "Knowingly lying or making false statements under oath in court." },
+            { id: "PC 166", name: "Contempt of Court", category: "judicial", title: "1", fine: 0, jailTime: 0, description: "Disrespecting or disobeying court orders or interfering with judicial proceedings." },
+            { id: "PC 2383", name: "Insurrection", category: "felony", title: "1", fine: 30000, jailTime: 38, description: "Uprising or revolt against the lawful authority of the government." },
+            { id: "PC 2384", name: "Sedition", category: "felony", title: "1", fine: 32000, jailTime: 40, description: "Inciting rebellion or resistance against lawful government authority." },
+            { id: "PC 37(a)", name: "Treason", category: "felony", title: "1", fine: 35000, jailTime: 40, description: "Any person who levies war against the state of San Andreas or adheres to its enemies, giving them aid and comfort." },
+            { id: "PC 38", name: "Misprision of Treason", category: "felony", title: "1", fine: 28000, jailTime: 36, description: "Every person having knowledge of the commission of treason, who conceals the same, and does not, as soon as may be, disclose the same to the Governor or to a judge." },
+            { id: "PC 424", name: "Economic Crimes against the State", category: "felony", title: "1", fine: 30000, jailTime: 38, description: "Large-scale fraud or financial crimes that threaten state integrity." },
+            { id: "PC 502", name: "Cyberterrorism", category: "felony", title: "1", fine: 28000, jailTime: 34, description: "Using computer systems to disrupt government functions or infrastructure." },
+            { id: "PC 792-798", name: "Espionage", category: "felony", title: "1", fine: 35000, jailTime: 40, description: "Illegally obtaining or transmitting government secrets to unauthorized parties." },
+            
+            // Title 2: Crimes By and Against a Public Servant
+            { id: "PC 67", name: "Bribing an Executive Officer", category: "misdemeanor", title: "2", fine: 13000, jailTime: 20, description: "The willful offering, giving, or promising of money, favors, or benefits to an executive officer with intent to influence their official actions or decisions." },
+            { id: "PC 67.5", name: "Bribing a Ministerial Officer", category: "misdemeanor", title: "2", fine: 11000, jailTime: 15, description: "The unlawful provision of bribes to a ministerial officer (e.g., clerks, administrative staff) to corruptly sway the execution of their non-discretionary duties." },
+            { id: "PC 69", name: "Resisting or Deterring an Executive Officer with Threats or Violence", category: "misdemeanor", title: "2", fine: 14000, jailTime: 25, description: "The use of threats, physical force, or intimidation to obstruct, resist, or deter an executive officer from performing lawful duties." },
+            { id: "PC 70", name: "Accepting Unauthorized Gratuities as Public Official", category: "misdemeanor", title: "2", fine: 10000, jailTime: 12, description: "The knowing acceptance of gifts, payments, or benefits by a public official for actions within their official capacity, where such exchanges are prohibited by law." },
+            { id: "PC 72", name: "Presenting False or Fraudulent Claims", category: "felony", title: "2", fine: 25000, jailTime: 34, description: "The submission of forged, falsified, or materially misleading claims to a government agency for financial gain or unwarranted benefits." },
+            { id: "PC 72.5", name: "Fraudulent Claims for Political Function Reimbursement", category: "misdemeanor", title: "2", fine: 9500, jailTime: 14, description: "The deceptive filing of expense claims related to political functions to obtain unauthorized reimbursements." },
+            { id: "PC 74", name: "Public Officials Appointing for Personal Gain", category: "felony", title: "2", fine: 28000, jailTime: 35, description: "The abuse of authority by a public official to appoint individuals to positions based on personal gain, nepotism, or quid pro quo arrangements." },
+            { id: "PC 76", name: "Threatening Public Officials", category: "misdemeanor", title: "2", fine: 12000, jailTime: 16, description: "The intentional communication of threats to harm, intimidate, or retaliate against a public official in connection with their official duties." },
+            { id: "PC 86", name: "Offering a Bribe for a Public Office Appointment", category: "misdemeanor", title: "2", fine: 9000, jailTime: 11, description: "The corrupt proposal of money, favors, or advantages to secure an appointment to a public office or position." },
+            { id: "PC 94.5", name: "Accepting Payment for Performing Civil Marriages", category: "misdemeanor", title: "2", fine: 8500, jailTime: 10, description: "The unlawful receipt of compensation by a public official for solemnizing marriages, beyond legally authorized fees." },
+            
+            // Title 3: Crimes Against Public Justice
+            { id: "CC 25400", name: "Insider Trading", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The illegal trading of stocks, securities, or assets based on material non-public information in regard to the 911 system." },
+            { id: "PC 107", name: "Fraudulent Tax Filing", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The submission of falsified tax returns, inflated deductions, or fictitious dependents to reduce tax liability." },
+            { id: "PC 109", name: "Intellectual Property Theft", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The unauthorized use, reproduction, or distribution of copyrighted, patented, or trademarked material for financial gain." },
+            { id: "PC 31", name: "Obstruction of Justice", category: "felony", title: "3", fine: 33500, jailTime: 38, description: "The unlawful interference with law enforcement, judicial proceedings, or investigations through acts such as destroying evidence, intimidating witnesses, or providing false information to authorities." },
+            { id: "PC 115", name: "Scam", category: "misdemeanor", title: "3", fine: 15000, jailTime: 30, description: "The execution of deceptive schemes (e.g., phishing, pyramid schemes, fake charities) to unlawfully obtain money or property." },
+            { id: "PC 484", name: "Fraud", category: "felony", title: "3", fine: 30000, jailTime: 35, description: "A person whose activity relies on deception in order to achieve a gain." },
+            { id: "PC 136.1", name: "Illegal Financial Transactions", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The deliberate execution of unregulated monetary exchanges, money laundering, or structuring transactions to evade legal reporting requirements (e.g., large cash transfers, offshore accounts)." },
+            { id: "PC 182", name: "Securities Fraud", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The manipulation of financial markets, misrepresentation of corporate information or Ponzi schemes to defraud investors." },
+            { id: "PC 165", name: "Money Laundering", category: "felony", title: "3", fine: 30000, jailTime: 36, description: "Any person who conducts or attempts to conduct a transaction with intent to conceal illegally gained funds, in an effort to 'clean' the money. The state must prove guilt and intent to charge." },
+            { id: "PC 653", name: "Forging, Stealing, Mutilating, and Falsifying Public Records and Documents", category: "felony", title: "3", fine: 30000, jailTime: 35, description: "Anyone who knowingly creates or offers a fake document to be filed, registered, or recorded in any public office in San Andreas, and if the document were real, it could be filed or recorded under state or federal law." },
+            { id: "PC 530.5", name: "Resisting Arrest", category: "misdemeanor", title: "3", fine: 13500, jailTime: 25, description: "It is illegal to willfully resist, delay, or obstruct a public official while they are performing official duties." },
+            { id: "PC", name: "Investment Fraud", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "Deceptive practices to solicit investments through false statements, Ponzi schemes, or concealment of material risks, resulting in financial harm to investors." },
+            { id: "PC", name: "Racketeering", category: "felony", title: "3", fine: 30000, jailTime: 35, description: "A pattern of criminal activity that includes murder, kidnapping, robbery, bribery, extortion, and arson in a way to obtain illegal profits." },
+            { id: "PC 470", name: "Unauthorized Access to Financial Data", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The intentional hacking, phishing, or unlawful intrusion into financial systems, databases, or records to obtain sensitive information (e.g. bank accounts, credit card data)." },
+            { id: "PC 487", name: "Impersonating a Government Official", category: "felony", title: "3", fine: 35000, jailTime: 40, description: "The fraudulent representation of oneself as a public officer, employee, or agent with intent to deceive, gain undue advantages or commit further criminal acts." },
+            { id: "PC 25401", name: "Misuse of 911", category: "infraction", title: "3", fine: 8000, jailTime: 0, description: "A person who willingly and of their own knowledge activates, obstructs, or falsifies information in regard to the 911 system." },
+            { id: "PC 19705", name: "Identity Theft", category: "felony", title: "3", fine: 30000, jailTime: 35, description: "The unlawful acquisition and use of another person's personal or financial information to commit fraud, theft, or impersonation." },
+            { id: "PC 484", name: "Conspiracy", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "An agreement between two or more people to commit a crime, often coupled with an overt act in furtherance of the conspiracy. It focuses on the planning stage rather than the completed act." },
+            { id: "PC 350", name: "Embezzlement", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The theft of money or assets that was entrusted in good faith by someone with criminal intent." },
+            { id: "PC 186.1", name: "Anti-Mask and Disguise Law", category: "misdemeanor", title: "3", fine: 85000, jailTime: 15, description: "Any person to wear a mask, false whiskers, or any personal disguise to evade or escape discovery, recognition, or identification in the commission of a crime. Or to escape or conceal themselves when charged with, arrested for, or convicted of any crime." },
+            { id: "PC 424", name: "Corporate Espionage", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The unauthorized acquisition, theft, or distribution of trade secrets, proprietary data, or confidential business information to gain a competitive advantage." },
+            { id: "PC 532", name: "Bank Fraud", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The use of deceit, false statements, or fraudulent schemes to obtain funds, assets, or credit from a financial institution." },
+            { id: "PC 502(c)", name: "Aiding and Abetting", category: "felony", title: "3", fine: 35000, jailTime: 40, description: "An act of assisting or encouraging another person in committing a crime." },
+            { id: "PC 1090", name: "Street Terrorism", category: "felony", title: "3", fine: 35000, jailTime: 40, description: "A person who actively participates in a criminal street gang with knowledge that its members engage in, or have engaged in, a pattern of criminal gang activity, and who willfully promotes, furthers, or assists in felonious criminal conduct by members of that gang." },
+            { id: "PC 499c", name: "Misappropriation of Funds", category: "misdemeanor", title: "3", fine: 13000, jailTime: 25, description: "The unlawful diversion or unauthorized use of funds entrusted to an individual or entity (e.g., embezzlement, misuse of public/private funds) for personal gain or unauthorized purposes." },
+            { id: "PC 1092", name: "Corruption", category: "felony", title: "3", fine: 35000, jailTime: 40, description: "Any public servant who willingly accepts a bribe, fails to adhere to their duties, or refuses to complete their duties." },
+            { id: "PC 186", name: "Rescues", category: "felony", title: "3", fine: 35000, jailTime: 40, description: "Every person who rescues or attempts to rescue, or aids another in rescuing or attempting to rescue, any prisoner from lawful custody." },
+            { id: "PC 186.6", name: "Escaping", category: "felony", title: "3", fine: 35000, jailTime: 40, description: "Every suspect who escapes or attempts to escape from custody, including jail or detention facilities." },
+            { id: "PC 186.1", name: "Financial Mismanagement", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "Gross negligence or intentional mishandling of funds, budgets, or assets by corporate officers or trustees, leading to significant financial loss or organizational harm." },
+            { id: "PC 503", name: "Impersonating a Peace Officer", category: "felony", title: "3", fine: 35000, jailTime: 40, description: "Falsely impersonating a peace officer such as a police officer, sheriff, highway patrol officer, or to possess or display law enforcement identification or uniforms with intent to deceive." },
+            { id: "PC 186.2", name: "Aiding Escape", category: "felony", title: "3", fine: 35000, jailTime: 40, description: "Every person who assists a prisoner in escaping or attempting to escape from lawful custody or confinement." },
+            { id: "PC 185", name: "Intimidation", category: "felony", title: "3", fine: 35000, jailTime: 40, description: "A person intimidates or threatens a victim or witness with malice." },
+            { id: "PC 148(a)(1)", name: "Kickbacks", category: "felony", title: "3", fine: 30000, jailTime: 35, description: "Accepting bribes or illegal payments in return for favorable treatment or services." },
+            { id: "PC 148", name: "Counterfeiting", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The production, distribution, or possession of forged currency, documents, or branded goods with intent to deceive." },
+            { id: "PC 146(a)", name: "Criminal Profiteering", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "An individual or organization who, through illegal activities, generates illegal profits." },
+            { id: "TC 19706", name: "Tax Evasion", category: "felony", title: "3", fine: 28500, jailTime: 31, description: "The deliberate underreporting of income, falsification of deductions, or concealment of assets to avoid tax obligations." },
+            
+            // Title 4: Crimes Against a Person
+            { id: "PC 186.22", name: "Gang Related Crimes", category: "felony", title: "4", fine: 30000, jailTime: 38, description: "Enhancement for crimes committed to benefit a criminal street gang." },
+            { id: "PC 187", name: "Murder", category: "felony", title: "4", fine: 35000, jailTime: 40, description: "The unlawful killing of a human being with malice aforethought (premeditation or inherent recklessness)" },
+            { id: "PC 187", name: "Attempted Murder", category: "felony", title: "4", fine: 30000, jailTime: 36, description: "The deliberate but unsuccessful attempt to kill another person with express malice." },
+            { id: "PC 192", name: "Manslaughter", category: "felony", title: "4", fine: 27000, jailTime: 34, description: "The unlawful killing of another without malice, categorized as voluntary (heat of passion) or involuntary (criminal negligence)." },
+            { id: "PC 192(c)", name: "Vehicular Manslaughter", category: "felony", title: "4", fine: 25000, jailTime: 32, description: "Causing death while driving unlawfully." },
+            { id: "PC 203", name: "Mayhem", category: "felony", title: "4", fine: 26000, jailTime: 33, description: "Intentional disfigurement or deprivation of a limb, eye, or other body part." },
+            { id: "PC 206", name: "Torture", category: "felony", title: "4", fine: 27500, jailTime: 38, description: "Inflicting extreme physical pain with intent to cause cruel suffering." },
+            { id: "PC 207", name: "Kidnapping", category: "felony", title: "4", fine: 32000, jailTime: 40, description: "Forcibly moving another person a substantial distance without consent." },
+            { id: "PC 211", name: "Robbery", category: "felony", title: "4", fine: 25600, jailTime: 33, description: "Taking property from another by force or fear, with intent to permanently deprive." },
+            { id: "PC 215", name: "Carjacking", category: "felony", title: "4", fine: 25000, jailTime: 34, description: "Taking a motor vehicle from another by force or fear, with intent to permanently deprive." },
+            { id: "PC 21510", name: "Possession of a Switchblade", category: "misdemeanor", title: "4", fine: 9500, jailTime: 15, description: "Carrying a switchblade knife with a blade longer than 2 inches." },
+            { id: "PC 217.1", name: "Assault on a Public Servant", category: "felony", title: "4", fine: 22000, jailTime: 31, description: "Assault against a public official engaged in duties." },
+            { id: "PC 236", name: "False Imprisonment", category: "felony", title: "4", fine: 23000, jailTime: 32, description: "Unlawful restraint or confinement of a person against their will." },
+            { id: "PC 236.1", name: "Human Trafficking", category: "felony", title: "4", fine: 35000, jailTime: 40, description: "Recruiting, harboring, or exploiting persons through force, fraud, or coercion." },
+            { id: "PC 240", name: "Assault", category: "misdemeanor", title: "4", fine: 10000, jailTime: 12, description: "An unlawful attempt to violently injure another person, coupled with present ability." },
+            { id: "PC 242", name: "Battery", category: "felony", title: "4", fine: 18000, jailTime: 31, description: "The willful and unlawful use of force or violence against another person." },
+            { id: "PC 242(a)", name: "Battery of a Public Servant", category: "felony", title: "4", fine: 20000, jailTime: 33, description: "The willful or unlawful use of force or violence against a peace officer, firefighter, EMT, or other public servant engaged in the performance of their duties." },
+            { id: "PC 243 (b) & (c)", name: "Battery on a Peace Officer", category: "felony", title: "4", fine: 22000, jailTime: 34, description: "Battery against a peace officer, firefighter, or EMT engaged in duties." },
+            { id: "PC 243.4", name: "Sexual Battery", category: "felony", title: "4", fine: 28000, jailTime: 38, description: "Non-consensual sexual touching of another person's intimate parts." },
+            { id: "PC 245", name: "Aggravated Assault", category: "felony", title: "4", fine: 21000, jailTime: 32, description: "Assault committed with a deadly weapon or force likely to cause great bodily injury." },
+            { id: "PC 246.3", name: "Discharge of a Firearm", category: "felony", title: "4", fine: 23000, jailTime: 33, description: "Grossly negligent discharge of a firearm in a manner endangering others." },
+            { id: "PC 246.4", name: "Negligent Discharge of a Firearm", category: "felony", title: "4", fine: 19000, jailTime: 31, description: "Accidental discharge causing injury or property damage due to recklessness." },
+            { id: "PC 25850", name: "Unlawful Possession of a Firearm", category: "felony", title: "4", fine: 18000, jailTime: 31, description: "Carrying a loaded firearm in public without a license or in prohibited areas." },
+            { id: "PC 30605", name: "Possession of an Assault Weapon", category: "felony", title: "4", fine: 16000, jailTime: 34, description: "Owning, selling, or manufacturing firearms classified as assault weapons." },
+            { id: "PC 417", name: "Brandishing a Firearm", category: "misdemeanor", title: "4", fine: 12000, jailTime: 14, description: "Displaying a firearm in a rude, angry, or threatening manner." },
+            { id: "PC 422", name: "Criminal Threats", category: "felony", title: "4", fine: 23000, jailTime: 33, description: "Threatening to kill or harm another, causing sustained fear and demonstrating intent." },
+            { id: "PC 646.9", name: "Stalking", category: "misdemeanor", title: "4", fine: 11000, jailTime: 15, description: "Willful and repeated harassment or threats causing credible fear of safety." },
+            { id: "PC 664", name: "Attempted Crime", category: "felony", title: "4", fine: 30000, jailTime: 38, description: "The deliberate but unsuccessful attempt to commit a crime." },
+            
+            // Title 5: Crimes Against Public Decency and Good Morals
+            { id: "PC 647", name: "Prostitution", category: "misdemeanor", title: "5", fine: 12400, jailTime: 20, description: "Engaging in or soliciting sexual acts in exchange for money or other compensation" },
+            { id: "PC 302", name: "Disruption of Religious Assembly", category: "misdemeanor", title: "5", fine: 13900, jailTime: 14, description: "Willfully disturbing or interrupting a religious meeting, ceremony, or worship service through loud or unreasonable behavior." },
+            { id: "PC 647.1", name: "Loitering", category: "misdemeanor", title: "5", fine: 10200, jailTime: 15, description: "Remaining in a public place with intent to commit prostitution, drug offenses, or other crimes." },
+            { id: "PC 25658", name: "Selling to a Minor", category: "misdemeanor", title: "5", fine: 30800, jailTime: 37, description: "Selling or furnishing alcoholic beverages to persons under age 21." },
+            { id: "PC 314", name: "Indecent Exposure", category: "misdemeanor", title: "5", fine: 9700, jailTime: 15, description: "Willfully exposing one's genitals in public or in view of others to offend or satisfy sexual desires." },
+            { id: "PC 330", name: "Illegal Gambling", category: "misdemeanor", title: "5", fine: 10800, jailTime: 18, description: "Operating or participating in unlawful games of chance or betting operations" },
+            { id: "PC 21628", name: "Pawnbrokering", category: "misdemeanor", title: "5", fine: 11600, jailTime: 22, description: "Operating as a pawnbroker without proper licensing or violating record-keeping requirements." },
+            { id: "PC 347", name: "Poisoning", category: "felony", title: "5", fine: 30000, jailTime: 35, description: "Willfully mingling poison with food, drink, or medicine with intent to injure." },
+            { id: "PC 368", name: "Elder Abuse", category: "felony", title: "5", fine: 32500, jailTime: 30, description: "Willfully causing physical or emotional harm, neglect, or financial exploitation of persons aged 65+." },
+            { id: "PC 5012", name: "Unlawful Practice of Law", category: "misdemeanor", title: "5", fine: 15000, jailTime: 25, description: "Representing oneself as a licensed attorney or providing legal services without proper credentials." },
+            { id: "PC 32", name: "Harboring a Fugitive", category: "felony", title: "5", fine: 33000, jailTime: 38, description: "Knowingly concealing or aiding a wanted criminal to evade arrest or prosecution." },
+            
+            // Title 6: Crimes Against Public Health and Safety
+            { id: "PC 369", name: "Driving on a Railroad", category: "infraction", title: "6", fine: 7500, jailTime: 0, description: "Operating a vehicle on railroad tracks without authorization, interfering with train operations or creating safety hazards." },
+            { id: "PC 372", name: "Public Nuisance", category: "infraction", title: "6", fine: 4000, jailTime: 0, description: "Maintaining a condition that unlawfully obstructs or endangers public health/safety in neighborhoods or public spaces." },
+            { id: "PC 374", name: "Littering", category: "infraction", title: "6", fine: 2000, jailTime: 0, description: "Willfully depositing waste on public/private property without permission (excluding proper receptacles)." },
+            { id: "PC 379", name: "Illegal Dumping of Human Remains", category: "felony", title: "6", fine: 35000, jailTime: 40, description: "Unauthorized disposal or concealment of human corpses outside approved burial methods." },
+            { id: "PC 382", name: "Food and Drugs Poisoning", category: "felony", title: "6", fine: 30000, jailTime: 35, description: "Knowingly contaminating consumable products with harmful substances, endangering public health." },
+            
+            // Title 7: Crimes Against Public Peace
+            { id: "PC 404", name: "Riot", category: "felony", title: "7", fine: 30500, jailTime: 35, description: "Participating in a violent public disturbance involving an immediate danger of injury or property damage by a group of 3+ persons." },
+            { id: "PC 404.6", name: "Inciting a Riot", category: "misdemeanor", title: "7", fine: 12500, jailTime: 22, description: "Urging others to engage in riotous conduct likely to produce imminent lawless action, whether or not violence occurs." },
+            { id: "PC 408", name: "Unlawful Assembly", category: "misdemeanor", title: "7", fine: 10000, jailTime: 16, description: "An unlawful assembly occurs when two or more people assemble to do an unlawful act, or a lawful act in a violent, boisterous, or tumultuous manner." },
+            { id: "PC 415", name: "Illegal Fighting", category: "misdemeanor", title: "7", fine: 10900, jailTime: 18, description: "Engaging in mutual physical combat in a public place that disturbs others, excluding self-defense situations." },
+            { id: "PC 415.5", name: "Disturbing the Peace", category: "misdemeanor", title: "7", fine: 10500, jailTime: 20, description: "Engaging in fighting, loud noise, or offensive words likely to provoke immediate violent reaction in public." },
+            { id: "PC 442.6", name: "Hate Crime", category: "misdemeanor", title: "7", fine: 12500, jailTime: 20, description: "Willfully interfering with constitutional rights through threats, violence, or property damage motivated by victim's protected characteristics." },
+            { id: "PC 594", name: "Vandalism", category: "misdemeanor", title: "7", fine: 10200, jailTime: 12, description: "Maliciously damaging, destroying, or defacing of a person's property." },
+            { id: "PC 602", name: "Denying Entry", category: "infraction", title: "7", fine: 5000, jailTime: 0, description: "Willfully preventing authorized entry to public facilities by locking doors, blocking access, or using physical barriers without lawful authority." },
+            
+            // Title 8: Crimes Against Property
+            { id: "PC 451", name: "Arson", category: "felony", title: "8", fine: 30000, jailTime: 35, description: "Willfully and maliciously setting fire to structures, forest land, or property" },
+            { id: "PC 453", name: "Possession of Arson Material", category: "felony", title: "8", fine: 30000, jailTime: 35, description: "Owning or preparing flammable/explosive substances with intent to commit theft or felony." },
+            { id: "PC 459", name: "Burglary", category: "felony", title: "8", fine: 28500, jailTime: 31, description: "Entering any structure with intent to commit theft or felony." },
+            { id: "PC 465", name: "Unlawful Entry into a Vehicle", category: "misdemeanor", title: "8", fine: 15000, jailTime: 30, description: "Breaking into/locking a vehicle with intent to commit theft." },
+            { id: "PC 466", name: "Possession of Burglary Equipment", category: "misdemeanor", title: "8", fine: 13500, jailTime: 25, description: "Owning tools adapted for breaking/entering with criminal intent." },
+            { id: "PC 484 (a)", name: "Petty Theft", category: "misdemeanor", title: "8", fine: 10500, jailTime: 15, description: "Stealing property valued less than or equal to $950 (or any amount of agricultural products)." },
+            { id: "PC 487", name: "Grand Theft", category: "misdemeanor", title: "8", fine: 13500, jailTime: 25, description: "Stealing property valued more than $950, firearms, or certain animals." },
+            { id: "PC 487(2)", name: "Grand Theft of a Firearm", category: "felony", title: "8", fine: 35000, jailTime: 40, description: "Stealing any firearm regardless of value." },
+            { id: "PC 496.5", name: "Automotive Property Theft", category: "misdemeanor", title: "8", fine: 0, jailTime: 25, description: "Receiving/selling stolen vehicle parts with knowledge." },
+            { id: "PC 499", name: "False Personation", category: "misdemeanor", title: "8", fine: 15000, jailTime: 30, description: "Impersonating another to cause harm/gain benefit (excluding PC 529)." },
+            { id: "PC 532", name: "Stolen Valor", category: "misdemeanor", title: "8", fine: 13500, jailTime: 25, description: "Fraudulently claiming military honors/decorations for benefit." },
+            { id: "PC 537", name: "Possession of Property with Altered Identification", category: "misdemeanor", title: "8", fine: 13500, jailTime: 25, description: "Owning property with removed/altered serial numbers." },
+            { id: "PC 550", name: "Insurance Fraud", category: "felony", title: "8", fine: 28500, jailTime: 31, description: "Knowingly making false claims to insurers." },
+            { id: "PC 602(2)", name: "Trespassing", category: "misdemeanor", title: "8", fine: 26500, jailTime: 30, description: "Refusing to leave private property after owner request." },
+            { id: "PC 556", name: "Illegal Signage", category: "infraction", title: "8", fine: 3000, jailTime: 0, description: "Posting advertisements on utility poles without permission." },
+            { id: "PC 565", name: "Destruction of Food Containers", category: "infraction", title: "8", fine: 5000, jailTime: 0, description: "Damaging/contaminating food containers to deceive buyers." },
+            { id: "PC 571", name: "Unlawful Subleasing of Vehicles", category: "misdemeanor", title: "8", fine: 13500, jailTime: 25, description: "Fraudulently subleasing vehicles without owner consent." },
+            { id: "PC 581", name: "Fraudulent Issue of Merchandise Documents", category: "misdemeanor", title: "8", fine: 13500, jailTime: 25, description: "Issuing false bills/receipts for merchandise." },
+            { id: "PC 594.1", name: "Destruction of Roadways, Traffic Devices, or Signage", category: "misdemeanor", title: "8", fine: 13500, jailTime: 25, description: "Defacing/destroying traffic control devices." },
+            { id: "PC 3004", name: "False Personation and Cheats Identification", category: "misdemeanor", title: "8", fine: 15000, jailTime: 30, description: "Manufacturing/selling fake government IDs." },
+            { id: "PC 148.5", name: "False Reporting", category: "infraction", title: "8", fine: 5000, jailTime: 0, description: "Making false police reports about crimes." },
+            { id: "PC 487d", name: "Grand Theft Auto", category: "felony", title: "8", fine: 30000, jailTime: 35, description: "Stealing a vehicle (regardless of value)." },
+            { id: "PC 459.5", name: "Shoplifting", category: "misdemeanor", title: "8", fine: 13500, jailTime: 25, description: "Entering open business during hours with intent to steal less than or equal $950." },
+            
+            // Title 9: Drug/Narcotics Offenses
+            { id: "PC 900.01", name: "Possession of Narcotics", category: "felony", title: "9", fine: 30000, jailTime: 38, description: "Unlawful possession of controlled substances such as cocaine, heroin, methamphetamine, etc. without a valid prescription." },
+            { id: "PC 900.02", name: "Possession of Drugs with Intent to Distribute", category: "felony", title: "9", fine: 28000, jailTime: 35, description: "Possessing controlled substances in quantities or with circumstances that suggest intent to sell or distribute" },
+            { id: "PC 900.03", name: "Drug Trafficking", category: "felony", title: "9", fine: 35000, jailTime: 40, description: "Transporting, selling, or distributing large quantities of illegal drugs across regions or jurisdictions." },
+            { id: "PC 900.04", name: "Manufacturing Drugs", category: "felony", title: "9", fine: 26500, jailTime: 34, description: "The production or synthesis of controlled substances without proper licensing or authority." },
+            { id: "PC 900.05", name: "Possession of Drug Paraphernalia", category: "misdemeanor", title: "9", fine: 15000, jailTime: 25, description: "Possession of items used for consumption or preparation of illegal drugs." },
+            { id: "PC 900.06", name: "Distribution of Drugs", category: "felony", title: "9", fine: 35000, jailTime: 40, description: "The sale or delivery of controlled substances to another person." },
+            { id: "PC 900.07", name: "Selling Drugs", category: "felony", title: "9", fine: 35000, jailTime: 40, description: "Unlawful sale of controlled substances, whether directly or indirectly." },
+            { id: "PC 900.08", name: "Drug Importation", category: "felony", title: "9", fine: 28000, jailTime: 35, description: "Importing illegal drugs from one jurisdiction to other locations." },
+            { id: "PC 900.09", name: "Drug Exportation", category: "felony", title: "9", fine: 28000, jailTime: 35, description: "Transporting illegal drugs from one jurisdiction to other locations." },
+            { id: "PC 900.10", name: "Possession of Drugs by a Minor", category: "misdemeanor", title: "9", fine: 15000, jailTime: 30, description: "Any individual under 18 years old found in possession of controlled substances." },
+            { id: "PC 900.11", name: "Drug Trafficking to a Minor", category: "felony", title: "9", fine: 35000, jailTime: 40, description: "Selling, distributing, or trafficking illegal drugs to individuals under 18 years old." },
+            { id: "PC 900.12", name: "Illegal Drug Synthesis", category: "felony", title: "9", fine: 35000, jailTime: 40, description: "Creating synthetic versions of controlled substances without authorization." },
+            { id: "PC 900.13", name: "Drug Cultivation", category: "felony", title: "9", fine: 35000, jailTime: 40, description: "Growing plants used to produce illegal drugs, such as marijuana (if not legally permitted)." },
+            { id: "PC 900.14", name: "Drug Smuggling", category: "felony", title: "9", fine: 35000, jailTime: 40, description: "Concealed transportation of illegal substances across borders or checkpoints." },
+            { id: "PC 900.15", name: "Drug Distribution", category: "felony", title: "9", fine: 30000, jailTime: 38, description: "Broad term encompassing unlawful transfer of controlled substances to another party." },
+            { id: "PC 900.16", name: "Drug-Related Assault", category: "felony", title: "9", fine: 35000, jailTime: 40, description: "Committing assault during or as a result of a drug transaction or dispute." },
+            { id: "PC 900.17", name: "Conspiracy to Distribute Drugs", category: "felony", title: "9", fine: 25000, jailTime: 30, description: "Agreement or plan to distribute illegal drugs, even if no drugs are physically present." },
+            { id: "PC 900.18", name: "Use of Drugs in Public", category: "misdemeanor", title: "9", fine: 15000, jailTime: 25, description: "Consuming or using controlled substances in public spaces." },
+            { id: "PC 900.19", name: "Drug Transportation", category: "felony", title: "9", fine: 30000, jailTime: 38, description: "Moving drugs from one location to another, with intent to distribute." },
+            { id: "PC 900.20", name: "Drug Dealing", category: "felony", title: "9", fine: 35000, jailTime: 40, description: "Selling drugs repeatedly or as part of an organized effort." },
+            
+            // Title 10: Vehicle Offenses
+            { id: "PC 20002", name: "Hit and Run (Property Damage Only)", category: "misdemeanor", title: "10", fine: 10000, jailTime: 12, description: "Leaving the scene after causing damage." },
+            { id: "PC 20001", name: "Hit and Run (Injury or Death)", category: "felony", title: "10", fine: 35000, jailTime: 36, description: "Leaving the scene after injury or fatality; felony." },
+            { id: "PC 23152(a)", name: "DUI", category: "misdemeanor", title: "10", fine: 11000, jailTime: 12, description: "Driving under the influence of alcohol or drugs." },
+            { id: "PC 23153(a)", name: "DUI Causing Injury", category: "felony", title: "10", fine: 29000, jailTime: 34, description: "DUI resulting in injury; felony if severe." },
+            { id: "PC 22350", name: "Basic Speed Law", category: "infraction", title: "10", fine: 7900, jailTime: 0, description: "Driving at unsafe speeds given conditions." },
+            { id: "PC 24400", name: "Headlights Required", category: "infraction", title: "10", fine: 7600, jailTime: 0, description: "During darkness or poor visibility." },
+            { id: "PC 24600", name: "Brake Lights", category: "infraction", title: "10", fine: 6500, jailTime: 0, description: "All vehicles must have functional rear brake lights." },
+            { id: "PC 26708", name: "Windshield and Window Obstruction", category: "infraction", title: "10", fine: 7100, jailTime: 0, description: "Obstructions or cracks that impair driver view." },
+            { id: "PC 12500(a)", name: "Unlicensed Driver", category: "misdemeanor", title: "10", fine: 9500, jailTime: 10, description: "Driving without a valid license." },
+            { id: "PC 14601", name: "Suspended/Revoked License", category: "misdemeanor", title: "10", fine: 10500, jailTime: 12, description: "Driving while license is suspended or revoked; misdemeanor or felony depending on history." },
+            { id: "PC 4000(a)", name: "Expired or Unregistered Vehicle", category: "misdemeanor", title: "10", fine: 9500, jailTime: 10, description: "Operating a vehicle without current registration." },
+            { id: "PC 21453", name: "Red Light Violation", category: "infraction", title: "10", fine: 7900, jailTime: 0, description: "Failure to stop at a red signal." },
+            { id: "PC 21950(a)", name: "Pedestrian Right-of-Way", category: "infraction", title: "10", fine: 7900, jailTime: 0, description: "Failure to yield to pedestrians at crosswalks." },
+            { id: "PC 21801(a)", name: "Left Turn on Controlled Street", category: "infraction", title: "10", fine: 7700, jailTime: 0, description: "Left turn violations when unsafe." },
+            { id: "PC 23103", name: "Reckless Driving", category: "misdemeanor", title: "10", fine: 27000, jailTime: 14, description: "Willful or wanton disregard for safety." },
+            { id: "PC 2800.1", name: "Evading Peace Officer", category: "felony", title: "10", fine: 28000, jailTime: 36, description: "Fleeing or attempting to elude police; misdemeanor or felony depending on injury or damage." }
+        ];
+
+        // Miranda Rights in different languages
+        const mirandaRights = {
+            english: [
+                "You have the right to remain silent and not say anything.",
+                "Anything you say can and will be used against you in a court of law.",
+                "You have the right to an attorney because you were caught in the act.",
+                "Do you understand these rights?"
+            ],
+            filipino: [
+                "Ikaw ay may karapatan na manahimik at magpasyalang kibo.",
+                "Lahat ng iyong sasabihin ay maaaring gamitin laban sa iyo sa harap ng hukuman.",
+                "Ikaw ay walang karapatan kumuha ng abogado dahil ikaw ay nahuli sa akto.",
+                "Naiintindihimo ba ang mga karapatan na ito?"
+            ]
+        };
+
+        // Selected charges array
+        let selectedCharges = [];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            populateAvailableCharges();
+            populatePenalCodesList();
+            updatePenalCodesCount();
+            setupEventListeners();
+        });
+
+        // Update penal codes count
+        function updatePenalCodesCount() {
+            const felonyCount = penalCodes.filter(code => code.category === 'felony').length;
+            const misdemeanorCount = penalCodes.filter(code => code.category === 'misdemeanor').length;
+            const infractionCount = penalCodes.filter(code => code.category === 'infraction').length;
+            const totalCount = penalCodes.length;
+            
+            document.getElementById('penalCodesCount').textContent = 
+                `Total: ${totalCount} penal codes (${felonyCount} Felonies, ${misdemeanorCount} Misdemeanors, ${infractionCount} Infractions)`;
+        }
+
+        // Populate available charges in the calculator
+        function populateAvailableCharges(searchTerm = '') {
+            const container = document.getElementById('availableCharges');
+            container.innerHTML = '';
+
+            const filteredCodes = penalCodes.filter(code => 
+                code.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                code.id.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            filteredCodes.forEach(code => {
+                const codeElement = document.createElement('div');
+                codeElement.className = 'penal-code-item';
+                codeElement.innerHTML = `
+                    <div class="code-header">
+                        <div class="code-title">${code.id} - ${code.name}</div>
+                        <div class="code-category ${code.category}">${code.category}</div>
+                    </div>
+                    <div class="code-description">${code.description}</div>
+                    <div class="code-penalty">
+                        <div class="penalty-item">
+                            <i class="fas fa-dollar-sign penalty-icon"></i>
+                            <span>$${code.fine.toLocaleString()}</span>
+                        </div>
+                        <div class="penalty-item">
+                            <i class="fas fa-clock penalty-icon"></i>
+                            <span>${code.jailTime} Months</span>
+                        </div>
+                    </div>
+                `;
+                codeElement.addEventListener('click', () => addCharge(code));
+                container.appendChild(codeElement);
+            });
+        }
+
+        // Populate penal codes list
+        function populatePenalCodesList(searchTerm = '', categoryFilter = '', titleFilter = '') {
+            const container = document.getElementById('penalCodesList');
+            container.innerHTML = '';
+
+            let filteredCodes = penalCodes;
+
+            if (searchTerm) {
+                filteredCodes = filteredCodes.filter(code => 
+                    code.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                    code.id.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+
+            if (categoryFilter) {
+                filteredCodes = filteredCodes.filter(code => code.category === categoryFilter);
+            }
+
+            if (titleFilter) {
+                filteredCodes = filteredCodes.filter(code => code.title === titleFilter);
+            }
+
+            filteredCodes.forEach(code => {
+                const codeElement = document.createElement('div');
+                codeElement.className = 'penal-code-item';
+                codeElement.innerHTML = `
+                    <div class="code-header">
+                        <div class="code-title">${code.id} - ${code.name}</div>
+                        <div class="code-category ${code.category}">${code.category}</div>
+                    </div>
+                    <div class="code-description">${code.description}</div>
+                    <div class="code-penalty">
+                        <div class="penalty-item">
+                            <i class="fas fa-dollar-sign penalty-icon"></i>
+                            <span>$${code.fine.toLocaleString()}</span>
+                        </div>
+                        <div class="penalty-item">
+                            <i class="fas fa-clock penalty-icon"></i>
+                            <span>${code.jailTime} Months</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(codeElement);
+            });
+        }
+
+        // Add a charge to the selected charges list
+        function addCharge(code) {
+            // Check if charge is already selected
+            if (selectedCharges.find(charge => charge.id === code.id)) {
+                return;
+            }
+
+            selectedCharges.push(code);
+            updateSelectedChargesDisplay();
+            updatePenaltySummary();
+            updateDiscordTemplate();
+        }
+
+        // Remove a charge from the selected charges list
+        function removeCharge(codeId) {
+            selectedCharges = selectedCharges.filter(charge => charge.id !== codeId);
+            updateSelectedChargesDisplay();
+            updatePenaltySummary();
+            updateDiscordTemplate();
+        }
+
+        // Update the selected charges display
+        function updateSelectedChargesDisplay() {
+            const container = document.getElementById('selectedCharges');
+            
+            if (selectedCharges.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No charges selected</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            selectedCharges.forEach(charge => {
+                const chargeElement = document.createElement('div');
+                chargeElement.className = 'charge-item';
+                chargeElement.innerHTML = `
+                    <div>
+                        <div class="charge-title">${charge.id} - ${charge.name}</div>
+                        <div class="charge-penalty">$${charge.fine.toLocaleString()} fine, ${charge.jailTime} months jail</div>
+                    </div>
+                    <button class="btn-remove" onclick="removeCharge('${charge.id}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(chargeElement);
+            });
+        }
+
+        // Update the penalty summary
+        function updatePenaltySummary() {
+            let totalFine = 0;
+            let totalJailTime = 0;
+
+            selectedCharges.forEach(charge => {
+                totalFine += charge.fine;
+                totalJailTime += charge.jailTime;
+            });
+
+            document.getElementById('totalFine').textContent = `$${totalFine.toLocaleString()}`;
+            document.getElementById('totalJailTime').textContent = `${totalJailTime} Months`;
+        }
+
+        // Update the Discord template
+        function updateDiscordTemplate() {
+            const caseNumber = document.getElementById('caseNumber').value || 'N/A';
+            let template = `**Case Number:** ${caseNumber}\n**Charges:**\n`;
+
+            if (selectedCharges.length === 0) {
+                template += 'No charges selected';
+            } else {
+                selectedCharges.forEach(charge => {
+                    template += `- ${charge.id} - ${charge.name}\n`;
+                });
+            }
+
+            let totalFine = 0;
+            let totalJailTime = 0;
+
+            selectedCharges.forEach(charge => {
+                totalFine += charge.fine;
+                totalJailTime += charge.jailTime;
+            });
+
+            template += `\n**Total Fine:** $${totalFine.toLocaleString()}\n**Total Jail Time:** ${totalJailTime} Months`;
+
+            document.getElementById('discordTemplate').value = template;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search for charges
+            document.getElementById('chargeSearch').addEventListener('input', function(e) {
+                populateAvailableCharges(e.target.value);
+            });
+
+            // Search for penal codes
+            document.getElementById('penalCodeSearch').addEventListener('input', function(e) {
+                const categoryFilter = document.getElementById('categoryFilter').value;
+                const titleFilter = document.getElementById('titleFilter').value;
+                populatePenalCodesList(e.target.value, categoryFilter, titleFilter);
+            });
+
+            // Category filter
+            document.getElementById('categoryFilter').addEventListener('change', function(e) {
+                const searchTerm = document.getElementById('penalCodeSearch').value;
+                const titleFilter = document.getElementById('titleFilter').value;
+                populatePenalCodesList(searchTerm, e.target.value, titleFilter);
+            });
+
+            // Title filter
+            document.getElementById('titleFilter').addEventListener('change', function(e) {
+                const searchTerm = document.getElementById('penalCodeSearch').value;
+                const categoryFilter = document.getElementById('categoryFilter').value;
+                populatePenalCodesList(searchTerm, categoryFilter, e.target.value);
+            });
+
+            // Case number input
+            document.getElementById('caseNumber').addEventListener('input', updateDiscordTemplate);
+
+            // Copy to clipboard button
+            document.getElementById('copyToClipboard').addEventListener('click', function() {
+                const textarea = document.getElementById('discordTemplate');
+                textarea.select();
+                document.execCommand('copy');
+                
+                // Change button text temporarily
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                }, 2000);
+            });
+
+            // Translate button for Miranda Rights
+            let currentLanguage = 'english';
+            document.getElementById('translateBtn').addEventListener('click', function() {
+                const rightsList = document.getElementById('mirandaRightsList');
+                
+                if (currentLanguage === 'english') {
+                    rightsList.innerHTML = '';
+                    mirandaRights.filipino.forEach(right => {
+                        const li = document.createElement('li');
+                        li.textContent = right;
+                        rightsList.appendChild(li);
+                    });
+                    this.innerHTML = '<i class="fas fa-language"></i> Filipino';
+                    currentLanguage = 'filipino';
+                } else {
+                    rightsList.innerHTML = '';
+                    mirandaRights.english.forEach(right => {
+                        const li = document.createElement('li');
+                        li.textContent = right;
+                        rightsList.appendChild(li);
+                    });
+                    this.innerHTML = '<i class="fas fa-language"></i> English';
+                    currentLanguage = 'english';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
